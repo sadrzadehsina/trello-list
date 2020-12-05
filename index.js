@@ -8,12 +8,15 @@ const ctx = new chalk.Instance({ level: 3 });
 
 // Printer Monad
 const colorize = value => ({
-	...value,
 	title: ctx.bgRedBright.bold(value.title),
 	body: ctx.bgBlackBright(value.body),
 	link: ctx.underline(value.link),
-})
-const makeLine = value => `${value.title}\n${value.body}\n${value.link}`;
+});
+const addBullet = value => ({
+	...value,
+	title: `\u2022 ${value.title}`,
+});
+const makeLine = value => [value.title, value.body, value.link].filter(v => v != '').join('\n');
 const logToConsole = value => {
 	console.log(value);
 	console.log('\n');
@@ -31,6 +34,7 @@ Printer.of = value => Printer(value);
 // ==============================================
 
 const prettyPrint = value => Printer.of(value)
+	.map(addBullet)
 	.map(colorize)
 	.map(makeLine)
 	.chain(logToConsole)
